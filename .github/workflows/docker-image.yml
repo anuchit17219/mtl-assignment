@@ -22,6 +22,6 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        docker build -t kowoatz/mlt-go-action:latest.
+        docker build -t kowoatz/mlt-go-action:latest .
         docker push kowoatz/mlt-go-action:latest
 

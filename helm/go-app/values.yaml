@@ -1,0 +1,18 @@
+# values.yaml
+
+name: mtl-app
+replicaCount: 1
+image:
+  repository: kowoatz/mtl-assignment
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: LoadBalancer
+  port: 8080
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 250Mi

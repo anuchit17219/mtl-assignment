@@ -24,4 +24,15 @@ jobs:
       run: |
         docker build -t kowoatz/mlt-go-action:latest .
         docker push kowoatz/mlt-go-action:latest
+    
+    - name: Install Helm
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+
+    - name: Generate K8s Manifest from Helm Chart
+      run: |
+        helm template mtl-chart helm/go-app > generated-manifest.yaml
+        cat generated-manifest.yaml
 

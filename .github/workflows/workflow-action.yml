@@ -55,13 +55,13 @@ jobs:
 
     - name: Generate K8S Manifest from Helm Chart
       run: |
-        helm template mtl-chart $HELM_PATH > $MANIFEST_FOLDER/$MANIFEST_FILE -f $MANIFEST_VALUES
-        cat $MANIFEST_FOLDER/$MANIFEST_FILE
+        helm template mtl-chart $HELM_PATH > $MANIFEST_FILE -f $MANIFEST_VALUES
+        cat $MANIFEST_FILE
     
     - uses: actions/upload-artifact@v2
       with:
         name: deployment_manifest
-        path: ./$MANIFEST_FOLDER/$MANIFEST_FILE
+        path: ./$MANIFEST_FILE
 
   deploy:
     runs-on: ubuntu-latest

@@ -1,14 +1,14 @@
 # values.yaml
 
-name: mtl-argo-app
+appName: mtl-argo-app
 project: default
 destination:
   namespace: default
-  server: https://kubernetes.default.svc
+  server: 'https://kubernetes.default.svc'
 source:
-  path: 
-  repoURL: https://github.com/argoproj/argocd-example-apps
-  targetRevision: HEAD
+  path: deploy_apps/
+  repoURL: 'https://github.com/anuchit17219/mtl-assaignment.git'
+  targetRevision: deployment
 automated:
   prune: true
   selfHeal: true

@@ -10,6 +10,15 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      IMAGE_NAME: mtl-app
+      HELM_PATH: helm/go-app
+      MANIFEST_FOLDER: manifest
+      MANIFEST_FILE: manifest.yaml
+      MANIFEST_VALUES: values.yaml
+      DEPLOY_BRANCH: deployment
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
@@ -22,8 +31,8 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        docker build -t kowoatz/mlt-go-action:latest .
-        docker push kowoatz/mlt-go-action:latest
+        docker build -t ${{ env.DOCKERHUB_USERNAME }}/{{ env.IMAGE_NAME }}:latest .
+        docker push ${{ env.DOCKERHUB_USERNAME }}/{{ env.IMAGE_NAME }}:latest
     
     - name: Install Helm
       run: |
@@ -31,8 +40,17 @@ jobs:
         chmod 700 get_helm.sh
         ./get_helm.sh
 
-    - name: Generate K8s Manifest from Helm Chart
+    - name: Generate K8S Manifest from Helm Chart
       run: |
-        helm template mtl-chart helm/go-app > generated-manifest.yaml
-        cat generated-manifest.yaml
+        helm template mtl-chart ${{ HELM_PATH }} > ${{ MANIFEST_FOLDER }}/${{ MANIFEST_FILE }} -f ${{ MANIFEST_FILE }}
+        cat ${{ MANIFEST_FOLDER }}/${{ MANIFEST_FILE }}
+
+    # - name: Deploy K8S manifest to Deployment branch
+    #   uses: s0/git-publish-subdir-action@develop
+    #   env:
+    #     REPO: self
+    #     BRANCH: ${{ DEPLOY_BRANCH }}
+    #     FOLDER: ${{ MANIFEST_FOLDER }}
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 

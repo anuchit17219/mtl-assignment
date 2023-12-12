@@ -1,6 +1,0 @@
-apiVersion: v2
-name: mtl-chart
-description: A Helm chart for go application to deploy on Kubernetes.
-type: application
-version: 0.1.0
-appVersion: "latest"

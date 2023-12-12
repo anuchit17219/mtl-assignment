@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-push-image:
+  build-and-push:
     runs-on: ubuntu-latest
 
     env:
@@ -35,8 +35,9 @@ jobs:
         docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
         docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
   
-  generate-manifest:
+  deploy:
     runs-on: ubuntu-latest
+    needs: [build-and-push]
     
     env:
       HELM_PATH: helm/go-app
@@ -58,37 +59,16 @@ jobs:
         helm template mtl-chart $HELM_PATH > $MANIFEST_FILE -f $MANIFEST_VALUES
         cat $MANIFEST_FILE
     
-    - uses: actions/upload-artifact@v2
-      with:
-        name: deployment_manifest
-        path: ./$MANIFEST_FILE
+    - run: |
+        mkdir $MANIFEST_FOLDER
+        cp  $MANIFEST_FILE $MANIFEST_FOLDER/$MANIFEST_FILE
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [generate-manifest]
-    
-    env:
-      MANIFEST_FOLDER: manifest
-      MANIFEST_FILE: manifest.yaml
-      DEPLOY_BRANCH: deployment
-    
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v2
-        with:
-          name: deployment_manifest
-          
-      - run: |
-          cat ./$MANIFEST_FILE
-          mkdir $MANIFEST_FOLDER
-          cp $MANIFEST_FILE $MANIFEST_FOLDER/$MANIFEST_FILE
-
-      - name: Upload to Deployment branch
-        uses: s0/git-publish-subdir-action@develop
-        env:
-          REPO: self
-          BRANCH: $DEPLOY_BRANCH
-          FOLDER: $MANIFEST_FOLDER
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload to Deployment branch
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: $DEPLOY_BRANCH
+        FOLDER: $MANIFEST_FOLDER
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 

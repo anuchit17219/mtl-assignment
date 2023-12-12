@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-push:
+  build-and-push-image:
     runs-on: ubuntu-latest
 
     env:
@@ -34,7 +34,19 @@ jobs:
       run: |
         docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
         docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+  
+  generate-manifest:
+    runs-on: ubuntu-latest
     
+    env:
+      HELM_PATH: helm/go-app
+      MANIFEST_FOLDER: manifest
+      MANIFEST_FILE: manifest.yaml
+      MANIFEST_VALUES: values.yaml
+      DEPLOY_BRANCH: deployment
+    
+    steps:
+    - uses: actions/checkout@v3
     - name: Install Helm
       run: |
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -43,16 +55,40 @@ jobs:
 
     - name: Generate K8S Manifest from Helm Chart
       run: |
-        mkdir $MANIFEST_FOLDER
         helm template mtl-chart $HELM_PATH > $MANIFEST_FOLDER/$MANIFEST_FILE -f $MANIFEST_VALUES
         cat $MANIFEST_FOLDER/$MANIFEST_FILE
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: deployment_manifest
+        path: ./$MANIFEST_FOLDER/$MANIFEST_FILE
 
-    - name: Deploy K8S manifest to Deployment branch
-      uses: s0/git-publish-subdir-action@develop
-      env:
-        REPO: self
-        BRANCH: $DEPLOY_BRANCH
-        FOLDER: $MANIFEST_FOLDER
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    runs-on: ubuntu-latest
+    
+    env:
+      MANIFEST_FOLDER: manifest
+      MANIFEST_FILE: manifest.yaml
+      DEPLOY_BRANCH: deployment
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v2
+        with:
+          name: deployment_manifest
+          path: ./
+          
+      - run: |
+          cat ./$MANIFEST_FILE
+          mkdir $MANIFEST_FOLDER
+          cp $MANIFEST_FILE $MANIFEST_FOLDER/$MANIFEST_FILE
+
+      - name: Upload to Deployment branch
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: $DEPLOY_BRANCH
+          FOLDER: $MANIFEST_FOLDER
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       IMAGE_NAME: mtl-app
       IMAGE_TAG: latest
       HELM_PATH: helm/go-app

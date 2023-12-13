@@ -46,7 +46,7 @@ jobs:
       MANIFEST_FILE: manifest.yaml
       MANIFEST_VALUES: values.yaml
       DEPLOY_VESION_FILE: deploy_version.txt
-      GITOPS_REPO: anuchit17219/mtl-assingment-ops
+      GITOPS_REPO: anuchit17219/mtl-assignment-ops
     
     steps:
     - uses: actions/checkout@v3
@@ -61,7 +61,8 @@ jobs:
         helm template mtl-chart $HELM_PATH > $MANIFEST_FILE -f $MANIFEST_VALUES
         cat $MANIFEST_FILE
     
-    - run: |
+    - name: Create manifest folder
+      run: |
         mkdir $MANIFEST_FOLDER
         cp $MANIFEST_FILE $MANIFEST_FOLDER/$MANIFEST_FILE
     

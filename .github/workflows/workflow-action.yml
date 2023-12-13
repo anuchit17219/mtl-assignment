@@ -44,7 +44,7 @@ jobs:
       MANIFEST_FOLDER: manifest
       MANIFEST_FILE: manifest.yaml
       MANIFEST_VALUES: values.yaml
-      DEPLOY_BRANCH: deployment
+      DEPLOY_VESION_FILE: deploy_version.txt
     
     steps:
     - uses: actions/checkout@v3
@@ -61,17 +61,23 @@ jobs:
     
     - run: |
         mkdir $MANIFEST_FOLDER
-        cp  $MANIFEST_FILE $MANIFEST_FOLDER/$MANIFEST_FILE
+        cp $MANIFEST_FILE $MANIFEST_FOLDER/$MANIFEST_FILE
+    
+    - name: Declare deploy version
+      shell: bash
+      run: |
+        echo git rev-parse --short "$GITHUB_SHA" >> $DEPLOY_VESION_FILE
+        echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
 
     - name: Push manifest to Deployment branch
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add manifest/
-        git commit -a -m "Deploy manifest"
+        git add manifest/ $DEPLOY_VESION_FILE
+        git commit -a -m "Deploy manifest version: ${{ env.SHA_SHORT }}"
     
     - uses: ad-m/github-push-action@master
       with:
-        branch: $DEPLOY_BRANCH
+        branch: deployment
 
 

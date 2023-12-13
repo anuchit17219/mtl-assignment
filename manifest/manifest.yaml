@@ -1,0 +1,48 @@
+---
+# Source: mtl-chart/templates/service.yaml
+# templates/service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mtl-app
+spec:
+  selector:
+    app: mtl-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+---
+# Source: mtl-chart/templates/deployment.yaml
+# templates/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mtl-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mtl-app
+  template:
+    metadata:
+      labels:
+        app: mtl-app
+    spec:
+      containers:
+        - name: mtl-app
+          image: "kowoatz/mtl-assignment-2:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: 
+            limits:
+              cpu: 200m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 250Mi

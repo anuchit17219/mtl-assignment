@@ -45,6 +45,7 @@ jobs:
       MANIFEST_FILE: manifest.yaml
       MANIFEST_VALUES: values.yaml
       DEPLOY_VESION_FILE: deploy_version.txt
+      GITOPS_REPO: anuchit17219/mtl-assingment-ops
     
     steps:
     - uses: actions/checkout@v3
@@ -68,16 +69,17 @@ jobs:
       run: |
         echo git rev-parse --short "$GITHUB_SHA" >> $DEPLOY_VESION_FILE
         echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-
-    - name: Push manifest to Deployment branch
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add manifest/ $DEPLOY_VESION_FILE
-        git commit -a -m "Deploy manifest version: ${{ env.SHA_SHORT }}"
     
-    - uses: ad-m/github-push-action@master
+    - name: Pushes manifest file
+      uses: dmnemec/copy_file_to_another_repo_action@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITOPS }}
       with:
-        branch: deployment
+        source_file: '$MANIFEST_FOLDER/$MANIFEST_FILE'
+        destination_repo: '$GITOPS_REPO'
+        destination_folder: './'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        user_name: 'github-actions[bot]'
+        commit_message: 'Deploy manifest version: ${{ env.SHA_SHORT }}'
 
 

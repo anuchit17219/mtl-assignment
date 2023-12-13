@@ -6,19 +6,20 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  IMAGE_NAME: mtl-app
+  IMAGE_TAG: latest
+  HELM_PATH: helm/go-app
+  MANIFEST_FOLDER: manifest
+  MANIFEST_FILE: manifest.yaml
+  MANIFEST_VALUES: values.yaml
+  DEPLOY_VESION_FILE: deploy_version.txt
+  GITOPS_REPO: anuchit17219/mtl-assingment-ops
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
-    env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      IMAGE_NAME: mtl-app
-      IMAGE_TAG: latest
-      HELM_PATH: helm/go-app
-      MANIFEST_FOLDER: manifest
-      MANIFEST_FILE: manifest.yaml
-      MANIFEST_VALUES: values.yaml
-      DEPLOY_BRANCH: deployment
 
     steps:
     - name: Checkout Repository
@@ -67,7 +68,7 @@ jobs:
     - name: Declare deploy version
       shell: bash
       run: |
-        echo git rev-parse --short "$GITHUB_SHA" >> $DEPLOY_VESION_FILE
+        echo git rev-parse --short "$GITHUB_SHA" >> $MANIFEST_FOLDER/$DEPLOY_VESION_FILE
         echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
     
     - name: Pushes manifest file
@@ -75,8 +76,8 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITOPS }}
       with:
-        source_file: '$MANIFEST_FOLDER/$MANIFEST_FILE'
-        destination_repo: '$GITOPS_REPO'
+        source_file: '${{ env.MANIFEST_FOLDER }}'
+        destination_repo: '${{ env.GITOPS_REPO }}'
         destination_folder: './'
         user_email: 'github-actions[bot]@users.noreply.github.com'
         user_name: 'github-actions[bot]'

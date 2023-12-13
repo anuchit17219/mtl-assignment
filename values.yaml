@@ -2,7 +2,7 @@
 name: mtl-app
 replicaCount: 1
 image:
-  repository: kowoatz/mtl-assignment-2
+  repository: kowoatz/mtl-assignment-3
   tag: latest
   pullPolicy: IfNotPresent
 containerPort: 8080

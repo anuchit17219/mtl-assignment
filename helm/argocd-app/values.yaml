@@ -6,9 +6,9 @@ destination:
   namespace: default
   server: 'https://kubernetes.default.svc'
 source:
-  path: deploy_apps/
-  repoURL: 'https://github.com/anuchit17219/mtl-assaignment.git'
-  targetRevision: deployment
+  path: manifest/
+  repoURL: 'https://github.com/anuchit17219/mtl-assaignment-ops.git'
+  targetRevision: HEAD
 automated:
   prune: true
   selfHeal: true

@@ -31,7 +31,7 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-    - name: Build and Push Docker Image
+    - name: Build and Push Docker image
       run: |
         docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
         docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
@@ -69,7 +69,7 @@ jobs:
     - name: Declare deploy version
       shell: bash
       run: |
-        echo git rev-parse --short "$GITHUB_SHA" >> $MANIFEST_FOLDER/$DEPLOY_VESION_FILE
+        git rev-parse --short "$GITHUB_SHA" >> $MANIFEST_FOLDER/$DEPLOY_VESION_FILE
         echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
     
     - name: Pushes manifest file

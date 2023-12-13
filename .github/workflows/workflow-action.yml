@@ -63,12 +63,14 @@ jobs:
         mkdir $MANIFEST_FOLDER
         cp  $MANIFEST_FILE $MANIFEST_FOLDER/$MANIFEST_FILE
 
-    - name: Upload to Deployment branch
-      uses: s0/git-publish-subdir-action@develop
-      env:
-        REPO: self
-        BRANCH: $DEPLOY_BRANCH
-        FOLDER: $MANIFEST_FOLDER
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push manifest to Deployment branch
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -a -m "Deploy manifest"
+    
+    - uses: ad-m/github-push-action@master
+      with:
+        branch: $DEPLOY_BRANCH
 
 

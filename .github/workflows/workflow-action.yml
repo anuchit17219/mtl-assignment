@@ -31,10 +31,21 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-    - name: Build and Push Docker image
-      run: |
-        docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
-        docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+    - name: Build Docker image
+      run: docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+    
+    - name: Run image vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: '${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:$${{ env.IMAGE_TAG }}'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+    
+    - name: Push Docker image
+      run: docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
   
   deploy:
     runs-on: ubuntu-latest

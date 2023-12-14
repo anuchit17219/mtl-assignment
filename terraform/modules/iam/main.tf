@@ -78,7 +78,7 @@ resource "aws_iam_policy" "sqs" {
         "sqs:ReceiveMessage",
         "sqs:DeleteMessage"
       ],
-      "Resource": "arn:aws:sqs:ap-southeast-1:123456789123:lms-import-data)"
+      "Resource": "arn:aws:sqs:ap-southeast-1:123456789123:lms-import-data"
     }
   ]
 }

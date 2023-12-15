@@ -120,8 +120,8 @@ destination:
   namespace: default
   server: https://kubernetes.default.svc
 source:
-  path: 
-  repoURL: https://github.com/argoproj/argocd-example-apps
+  path: ./manifest
+  repoURL: https://github.com/anuchit17219/mtl-assaignment-ops.git
   targetRevision: HEAD
 automated:
   prune: true
